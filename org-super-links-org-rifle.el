@@ -32,12 +32,12 @@
 (declare-function org-super-links--insert-link "org-super-links")
 (declare-function helm-org-rifle "ext:helm-org-rifle")
 
-(defun org-super-links-org-rifle-insert-link-rifle-action (candidate)
+(defun org-super-links-org-rifle-insert-link-action (candidate)
   "Wrapper for `org-super-links--insert-link` for helm/rifle integration.
 CANDIDATE is a helm candidate."
   (let ((buffer (car candidate))
-	(pos (cdr candidate))
-	(target (make-marker)))
+        (pos (cdr candidate))
+        (target (make-marker)))
     (set-marker target pos buffer)
     (org-super-links--insert-link target)))
 
