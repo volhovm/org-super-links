@@ -86,8 +86,8 @@ Default is the variable `org-make-link-desciption-function'.")
 
 (defvar org-super-links-search-function
   (cond ((require 'helm-org-ql nil 'no-error) "helm-org-ql")
-	((require 'helm-org-rifle nil 'no-error) "helm-org-rifle")
-	(t 'org-super-links-get-location))
+        ((require 'helm-org-rifle nil 'no-error) "helm-org-rifle")
+        (t 'org-super-links-get-location))
   "The interface to use for finding target links.
 This can be a string with one of the values 'helm-org-ql',
 'helm-org-rifle', or a function.  If you provide a custom
@@ -116,6 +116,10 @@ This is called with point at the location where it was called.")
   "Hook called before storing the link on the backlink side.
 This is called with point in the heading of the backlink.")
 
+(defvar org-super-links-enable-forward-prompt nil
+  "Whether to show the prompt dialogue, as with the default `org-insert-link',
+that suggests to modify the original link description.")
+
 (declare-function org-super-links-org-ql-link-search-interface "ext:org-super-links-org-ql")
 (declare-function org-super-links-org-rifle-link-search-interface "ext:org-super-links-org-rifle")
 
@@ -123,59 +127,59 @@ This is called with point in the heading of the backlink.")
   "An `org-super-links-search-function' that reuses the org-refile machinery."
   (let ((target (org-refile-get-location "Super Link")))
     (org-super-links--insert-link (set-marker (make-marker) (car (cdddr target))
-				 (get-file-buffer (car (cdr target)))))))
+                                 (get-file-buffer (car (cdr target)))))))
 
 (defun org-super-links-search-function ()
   "Call the search interface specified in `org-super-links-search-function'."
   (cond ((string= org-super-links-search-function "helm-org-ql")
-	 (require 'org-super-links-org-ql)
-	 (org-super-links-org-ql-link-search-interface))
-	((string= org-super-links-search-function "helm-org-rifle")
-	 (require 'org-super-links-org-rifle)
-	 (org-super-links-org-rifle-link-search-interface))
-	(t (funcall org-super-links-search-function))))
+         (require 'org-super-links-org-ql)
+         (org-super-links-org-ql-link-search-interface))
+        ((string= org-super-links-search-function "helm-org-rifle")
+         (require 'org-super-links-org-rifle)
+         (org-super-links-org-rifle-link-search-interface))
+        (t (funcall org-super-links-search-function))))
 
 (defun org-super-links-backlink-prefix ()
   "Return an appropriate string based on variable `org-super-links-backlink-prefix'."
   (cond ((equal org-super-links-backlink-prefix nil) "")
-	((stringp org-super-links-backlink-prefix) org-super-links-backlink-prefix)
-	(t (funcall org-super-links-backlink-prefix))))
+        ((stringp org-super-links-backlink-prefix) org-super-links-backlink-prefix)
+        (t (funcall org-super-links-backlink-prefix))))
 
 (defun org-super-links-backlink-postfix ()
   "Return an appropriate string based on variable `org-super-links-backlink-postfix'."
   (cond ((equal org-super-links-backlink-postfix nil) "\n")
-	((stringp org-super-links-backlink-postfix) org-super-links-backlink-postfix)
-	(t (funcall org-super-links-backlink-postfix))))
+        ((stringp org-super-links-backlink-postfix) org-super-links-backlink-postfix)
+        (t (funcall org-super-links-backlink-postfix))))
 
 (defun org-super-links-link-prefix ()
   "Return an appropriate string based on variable `org-super-links-link-prefix'."
   (cond ((equal org-super-links-link-prefix nil) "")
-	((stringp org-super-links-link-prefix) org-super-links-link-prefix)
-	(t (funcall org-super-links-link-prefix))))
+        ((stringp org-super-links-link-prefix) org-super-links-link-prefix)
+        (t (funcall org-super-links-link-prefix))))
 
 (defun org-super-links-link-postfix ()
   "Return an appropriate string based on variable `org-super-links-link-postfix'."
   (cond ((equal org-super-links-link-postfix nil) "")
-	((stringp org-super-links-link-postfix) org-super-links-link-postfix)
-	(t (funcall org-super-links-link-postfix))))
+        ((stringp org-super-links-link-postfix) org-super-links-link-postfix)
+        (t (funcall org-super-links-link-postfix))))
 
 (defun org-super-links-backlink-prefix-timestamp ()
   "Return the default prefix string for a backlink.
 Inactive timestamp formatted according to `org-time-stamp-formats' and
 a separator ' <- '."
   (let* ((time-format (substring (cdr org-time-stamp-formats) 1 -1))
-	 (time-stamp (format-time-string time-format (current-time))))
+         (time-stamp (format-time-string time-format (current-time))))
     (format "[%s] <- "
-	    time-stamp)))
+            time-stamp)))
 
 (defun org-super-links-default-description-formatter (link desc)
   "Return a string to use as the link desciption.
 LINK is the link target.  DESC is the provided desc."
   (let ((p org-super-links-default-description-formatter))
     (cond ((equal p nil) (or desc link))
-	  ((stringp p) (or desc p))
-	  ((fboundp p) (funcall p link desc))
-	  (t desc))))
+          ((stringp p) (or desc p))
+          ((fboundp p) (funcall p link desc))
+          (t desc))))
 
 (defun org-super-links-backlink-into-drawer ()
   "Name of the backlink drawer, as a string, or nil.
@@ -184,24 +188,24 @@ current entry has or inherits a BACKLINK_INTO_DRAWER property, it will
 be used instead of the default value."
   (let ((p (org-entry-get nil "BACKLINK_INTO_DRAWER" 'inherit t)))
     (cond ((equal p "nil") nil)
-	  ((equal p "t") "BACKLINKS")
-	  ((stringp p) p)
-	  (p "BACKLINKS")
-	  ((stringp org-super-links-backlink-into-drawer) org-super-links-backlink-into-drawer)
-	  (org-super-links-backlink-into-drawer "BACKLINKS"))))
+          ((equal p "t") "BACKLINKS")
+          ((stringp p) p)
+          (p "BACKLINKS")
+          ((stringp org-super-links-backlink-into-drawer) org-super-links-backlink-into-drawer)
+          (org-super-links-backlink-into-drawer "BACKLINKS"))))
 
 ;; delete related functions
 (defun org-super-links--find-link (id)
   "Return link element for ID."
   (org-super-links--org-narrow-to-here)
   (let ((link
-	 (org-element-map (org-element-parse-buffer) 'link
-	   (lambda (link)
-	     (when (string= (org-element-property :path link) id)
-	       link)))))
+         (org-element-map (org-element-parse-buffer) 'link
+           (lambda (link)
+             (when (string= (org-element-property :path link) id)
+               link)))))
     (widen)
     (if (> (length link) 1)
-	(error "Multiple links found. Cancelling delete")
+        (error "Multiple links found. Cancelling delete")
       (car link))))
 
 (defun org-super-links--org-narrow-to-here ()
@@ -217,7 +221,7 @@ be used instead of the default value."
 Return element at point is in a drawer."
   (let ((element (org-element-at-point)))
     (while (and element
-		(not (memq (org-element-type element) '(drawer property-drawer))))
+                (not (memq (org-element-type element) '(drawer property-drawer))))
       (setq element (org-element-property :parent element)))
     element))
 
@@ -228,9 +232,9 @@ If point is in drawer, delete the entire line."
   (save-excursion
     (goto-char (org-element-property :begin link))
     (if (org-super-links--in-drawer)
-	(progn
-	  (kill-whole-line 1)
-	  (org-remove-empty-drawer-at (point)))
+        (progn
+          (kill-whole-line 1)
+          (org-remove-empty-drawer-at (point)))
       (delete-region (org-element-property :begin link) (org-element-property :end link)))))
 
 
@@ -245,47 +249,52 @@ current entry has or inherits a RELATED_INTO_DRAWER property, it will
 be used instead of the default value."
   (let ((p (org-entry-get nil "RELATED_INTO_DRAWER" 'inherit t)))
     (cond ((equal p "nil") nil)
-	  ((equal p "t") org-super-links-related-drawer-default-name)
-	  ((stringp p) p)
-	  (p org-super-links-related-drawer-default-name)
-	  ((stringp org-super-links-related-into-drawer) org-super-links-related-into-drawer)
-	  (org-super-links-related-into-drawer org-super-links-related-drawer-default-name))))
+          ((equal p "t") org-super-links-related-drawer-default-name)
+          ((stringp p) p)
+          (p org-super-links-related-drawer-default-name)
+          ((stringp org-super-links-related-into-drawer) org-super-links-related-into-drawer)
+          (org-super-links-related-into-drawer org-super-links-related-drawer-default-name))))
 
 (defun org-super-links-insert-relatedlink (link desc)
   "LINK DESC related experiment."
-  (if (org-super-links-related-into-drawer)
-      (let* ((org-log-into-drawer (org-super-links-related-into-drawer))
-	     (beg (org-log-beginning t)))
-	(goto-char beg)
-	(insert (org-super-links-link-prefix))
-	(org-insert-link nil link desc)
-	(insert (org-super-links-link-postfix) "\n")
-	(org-indent-region beg (point)))
-    (insert (org-super-links-link-prefix))
-    (org-insert-link nil link desc)
-    (insert (org-super-links-link-postfix))))
+  (let ((desc-forward (if org-super-links-enable-forward-prompt
+                        (read-string "My Description: " desc)
+                        desc)))
+    (if (org-super-links-related-into-drawer)
+        (let* ((org-log-into-drawer (org-super-links-related-into-drawer))
+               (beg (org-log-beginning t)))
+          (goto-char beg)
+          (insert (org-super-links-link-prefix))
+          ; desc-forward is not used here as presumably
+          ; this mode of insertion is more automatic
+          (org-insert-link nil link desc)
+          (insert (org-super-links-link-postfix) "\n")
+          (org-indent-region beg (point)))
+      (insert (org-super-links-link-prefix))
+      (org-insert-link nil link desc-forward)
+      (insert (org-super-links-link-postfix)))))
 
 (defun org-super-links-link-prefix-timestamp ()
   "Return the default prefix string for a backlink.
 Inactive timestamp formatted according to `org-time-stamp-formats' and
 a separator ' -> '."
   (let* ((time-format (substring (cdr org-time-stamp-formats) 1 -1))
-	 (time-stamp (format-time-string time-format (current-time))))
+         (time-stamp (format-time-string time-format (current-time))))
     (format "[%s] -> "
-	    time-stamp)))
+            time-stamp)))
 
 (defun org-super-links-quick-insert-drawer-link ()
   (interactive)
   ;; how to handle prefix here?
   (let ((org-super-links-related-into-drawer (or org-super-links-related-into-drawer t))
-	(org-super-links-link-prefix 'org-super-links-link-prefix-timestamp))
+        (org-super-links-link-prefix 'org-super-links-link-prefix-timestamp))
     (org-super-links-link)))
 
 (defun org-super-links-quick-insert-inline-link ()
   (interactive)
   ;; how to handle prefix here?
   (let ((org-super-links-related-into-drawer nil)
-	(org-super-links-link-prefix nil))
+        (org-super-links-link-prefix nil))
     (org-super-links-link)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -296,8 +305,8 @@ a separator ' -> '."
   "Insert backlink to LINK with DESC.
 Where the backlink is placed is determined by the variable `org-super-links-backlink-into-drawer'."
   (let* ((org-log-into-drawer (org-super-links-backlink-into-drawer))
-	 (description (org-super-links-default-description-formatter link desc))
-	 (beg (org-log-beginning t)))
+         (description (org-super-links-default-description-formatter link desc))
+         (beg (org-log-beginning t)))
     (goto-char beg)
     (insert (org-super-links-backlink-prefix))
     (insert (org-link-make-string link description))
@@ -314,8 +323,8 @@ Where the backlink is placed is determined by the variable `org-super-links-back
 
 (defun org-super-links-link-builder (link)
   (let* ((link-ref (car link))
-	 (pre-desc (cadr link))
-	 (description (org-super-links-default-description-formatter link-ref pre-desc)))
+         (pre-desc (cadr link))
+         (description (org-super-links-default-description-formatter link-ref pre-desc)))
     (cons link-ref description)))
 
 (defun org-super-links--insert-link (target &optional no-forward)
@@ -326,20 +335,20 @@ act like a normal link.
 If NO-FORWARD is non-nil skip creating the forward link.  Currently
 only used when converting a link."
   (let* ((source (point-marker))
-	 (source-link (org-super-links-links-action source 'org-super-links-pre-link-hook))
-	 (target-link (org-super-links-links-action target 'org-super-links-pre-backlink-hook))
-	 (source-formatted-link (org-super-links-link-builder source-link))
-	 (target-formatted-link (org-super-links-link-builder target-link)))
+         (source-link (org-super-links-links-action source 'org-super-links-pre-link-hook))
+         (target-link (org-super-links-links-action target 'org-super-links-pre-backlink-hook))
+         (source-formatted-link (org-super-links-link-builder source-link))
+         (target-formatted-link (org-super-links-link-builder target-link)))
     (with-current-buffer (marker-buffer target)
       (save-excursion
-	(goto-char (marker-position target))
-	(when (derived-mode-p 'org-mode)
-	  (org-super-links-insert-backlink (car source-formatted-link) (cdr source-formatted-link)))))
+        (goto-char (marker-position target))
+        (when (derived-mode-p 'org-mode)
+          (org-super-links-insert-backlink (car source-formatted-link) (cdr source-formatted-link)))))
     (unless no-forward
       (with-current-buffer (marker-buffer source)
-	(save-excursion
-	  (goto-char (marker-position source))
-	  (org-super-links-insert-relatedlink (car target-formatted-link) (cdr target-formatted-link)))))))
+        (save-excursion
+          (goto-char (marker-position source))
+          (org-super-links-insert-relatedlink (car target-formatted-link) (cdr target-formatted-link)))))))
 
 
 ;;;###autoload
@@ -352,17 +361,17 @@ When called interactively with a `C-u' prefix argument ignore
 link."
   (interactive "P")
   (let ((from-m (point-marker))
-	(target (save-window-excursion
-		  (with-current-buffer (current-buffer)
-		    (save-excursion
-		      (org-open-at-point)
-		      (point-marker))))))
+        (target (save-window-excursion
+                  (with-current-buffer (current-buffer)
+                    (save-excursion
+                      (org-open-at-point)
+                      (point-marker))))))
     (org-super-links--insert-link target arg)
     (goto-char (marker-position from-m)))
 
   (when (and (not arg) (org-super-links-related-into-drawer))
     (let ((begin (org-element-property :begin (org-element-context)))
-	  (end (org-element-property :end (org-element-context))))
+          (end (org-element-property :end (org-element-context))))
       (delete-region begin end))))
 
 ;;;###autoload
@@ -374,12 +383,12 @@ This works from either side, and deletes both sides of a link."
   (save-window-excursion
     (with-current-buffer (current-buffer)
       (save-excursion
-	(let ((id (org-id-get (point))))
-	  (org-open-at-point)
-	  (let ((link-element (org-super-links--find-link id)))
-	    (if link-element
-		(org-super-links--delete-link link-element)
-	      (message "No backlink found. Deleting active only.")))))))
+        (let ((id (org-id-get (point))))
+          (org-open-at-point)
+          (let ((link-element (org-super-links--find-link id)))
+            (if link-element
+                (org-super-links--delete-link link-element)
+              (message "No backlink found. Deleting active only.")))))))
   (org-super-links--delete-link (org-element-context)))
 
 ;;;###autoload
@@ -415,9 +424,9 @@ GOTO and KEYS are unused."
   (interactive)
   (let* ((target (get-register ?^)))
     (if target
-	(progn
-	  (org-super-links--insert-link target)
-	  (set-register ?^ nil))
+        (progn
+          (org-super-links--insert-link target)
+          (set-register ?^ nil))
       (message "No link to insert!"))))
 
 ;;;###autoload
