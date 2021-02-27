@@ -346,9 +346,8 @@ only used when converting a link."
           (org-super-links-insert-backlink (car source-formatted-link) (cdr source-formatted-link)))))
     (unless no-forward
       (with-current-buffer (marker-buffer source)
-        (save-excursion
-          (goto-char (marker-position source))
-          (org-super-links-insert-relatedlink (car target-formatted-link) (cdr target-formatted-link)))))))
+        (goto-char (marker-position source))
+          (org-super-links-insert-relatedlink (car target-formatted-link) (cdr target-formatted-link))))))
 
 
 ;;;###autoload
